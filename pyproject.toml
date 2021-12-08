@@ -1,28 +1,28 @@
 [tool.poetry]
-name = "jpaulorc_csv_converter"
-version = "0.1.0"
-description = "Convert csv to json and json to csv. Publishin only for leaning purposes."
 authors = ["Joao Corte <jpaulorc@gmail.com>"]
+description = "Convert csv to json and json to csv. Publishin only for leaning purposes."
+name = "jpaulorc_csv_converter"
 readme = "README.md"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
 click = "^8.0.3"
+python = "^3.9"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
-flake8 = "^4.0.1"
-mypy = "^0.910"
 black = "^21.12b0"
+flake8 = "^4.0.1"
 ipython = "^7.30.1"
 isort = "^5.10.1"
+mypy = "^0.910"
+pytest = "^5.2"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
 
 [tool.poetry.scripts]
-csv_converter = 'jpaulorc_puc_csv_converter.converter:converter'
+csv_converter = 'jpaulorc_csv_converter.converter:converter'
 
 [tool.black]
 line-length = 99
