@@ -4,7 +4,7 @@ description = "Convert csv to json and json to csv. Publishin only for leaning p
 exclude = ["jpaulorc_csv_converter/.git"]
 name = "jpaulorc_csv_converter"
 readme = "README.md"
-version = "0.1.1"
+version = "0.1.2"
 
 [tool.poetry.dependencies]
 click = "^8.0.3"

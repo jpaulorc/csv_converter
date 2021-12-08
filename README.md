@@ -1,6 +1,7 @@
 # File Converter
 
 Used to convert files to CSV or JSON.
+This project does not use any library to convert these files.
 
 ## Introduction
 
