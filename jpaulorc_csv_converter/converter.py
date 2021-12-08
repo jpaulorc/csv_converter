@@ -103,17 +103,27 @@ def check_extension(file: Path) -> str:
         raise TypeError("Not a valid file extension.")
 
 
-def parse_csv(data: list[list[str]]) -> list[dict[str, str]]:
+def parse_list_to_dict(data: list[list[str]]) -> list[dict[str, str]]:
+    """Convert a list of lists to a list of dicts.
+
+    Args:
+        data (list[list[str]]): A data file containing a list of lists.
+
+    Returns:
+        list[dict[str, str]]: A data file containing a list of dicts.
+    """
+    print(data)
     column = data[0]
     lines = data[1:]
     """Checks if all lines have values. Some files have special character in last lines."""
+    print([dict(zip(column, line)) for line in lines if len(column) == len(line)])
     return [dict(zip(column, line)) for line in lines if len(column) == len(line)]
 
 
 def read_csv(input_path: Path, delimiter: str = ",") -> list[dict[str, str]]:
     with input_path.open(mode="r") as file:
         data = file.readlines()
-    return parse_csv([line.strip().split(delimiter) for line in data])
+    return parse_list_to_dict([line.strip().split(delimiter) for line in data])
 
 
 def read_json(input_path: Path) -> list[dict[str, str]]:
