@@ -53,47 +53,36 @@ def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefi
     if delimiter not in [",", ";", ":"]:
         raise TypeError("Not a valid symbol to delimiter.")
 
-    data = read_file(source=input_path, delimiter=delimiter)
+    if input_path.is_file():
+        if check_extension(input_path) == ".json":
+            logger.info("Reading Single JSON File %s", input_path)
+            write_csv(
+                data=[read_json(input_path=input_path)],
+                delimiter=delimiter,
+                output_path=output_path,
+                prefix=prefix,
+            )
+        elif check_extension(input_path) == ".csv":
+            logger.info("Reading Single CSV File %s", input_path)
+            write_json(
+                data=[read_csv(input_path=input_path, delimiter=delimiter)],
+                output_path=output_path,
+                prefix=prefix,
+            )
+    else:
+        csv_data = list()  # type: list
+        json_data = list()  # type: list
+        logger.info("Reading all files for given path %s", input_path)
+        for name in input_path.iterdir():
+            if check_extension(name) == ".json":
+                json_data.append(read_json(input_path=name))
+            elif check_extension(name) == ".csv":
+                csv_data.append(read_csv(input_path=name, delimiter=delimiter))
 
-    """extension = check_extension(input_path)
-    if extension == ".json":
-        write_csv(data=data, output_path=output_path, prefix=prefix)
-    elif extension == ".csv":
-        write_json(data=data, output_path=output_path, prefix=prefix)"""
-
-
-def write_file(data, input_path, output_path, prefix):
-    pass
-
-
-def read_file(source: Path, delimiter: str):  # -> list:
-    """Load csv files from disk.
-
-    Args:
-        source (Path): Path of a single csv file or directory containing csvs to be parsed.
-        delimiter (str): Separator for columns in csv.
-
-    Returns:
-        List: List of Lists.
-    """
-    if source.is_file():
-        extension = check_extension(source)
-        if extension == ".json":
-            logger.info("Reading Single JSON File %s", source)
-            return [read_json(input_path=source)]
-        elif extension == ".csv":
-            logger.info("Reading Single CSV File %s", source)
-            return [read_csv(input_path=source, delimiter=delimiter)]
-
-    data = list()
-    logger.info("Reading all files for given path %s", source)
-    for name in source.iterdir():
-        if check_extension(name) == ".json":
-            logger.info("Reading all JSON files for given path %s", source)
-        elif check_extension(name) == ".csv":
-            data.append(read_csv(input_path=name, delimiter=delimiter))
-
-    return data
+        if csv_data:
+            write_json(data=csv_data, output_path=output_path, prefix=prefix)
+        if json_data:
+            write_csv(data=json_data, delimiter=delimiter, output_path=output_path, prefix=prefix)
 
 
 def check_extension(file):
@@ -121,7 +110,7 @@ def read_json(input_path: Path) -> list[dict[str, str]]:
     return eval(open(input_path, "r").read().replace("null", "None"))
 
 
-def isfloat(value: str) -> bool:
+def is_float(value: str) -> bool:
     """Checks if a value is floating.
 
     Args:
@@ -138,7 +127,7 @@ def isfloat(value: str) -> bool:
         return True
 
 
-def isint(value: str) -> bool:
+def is_int(value: str) -> bool:
     """Checks if a value is integer.
 
     Args:
@@ -166,9 +155,9 @@ def write_json_line(row, file, append_comma: bool = True):
     key, value = row
     if not value:
         file.write(f'\t\t"{key}": null')
-    elif isint(value):
+    elif is_int(value):
         file.write(f'\t\t"{key}": {int(value)}')
-    elif isfloat(value):
+    elif is_float(value):
         file.write(f'\t\t"{key}": {float(value)}')
     else:
         file.write(f'\t\t"{key}": "{value}"')
@@ -197,5 +186,20 @@ def write_json(data, output_path, prefix):  # (data: list[dict[str, str]], outpu
             file.write("]\n")
 
 
-def write_csv(data, output_path, prefix):
-    pass
+def write_csv(data, delimiter, output_path, prefix):
+    for key, content in enumerate(data):
+        file_name = output_path.joinpath(f"{prefix}_{key}.csv")
+        logger.info("Saving file %s in folder %s", file_name, output_path)
+
+        with file_name.open(mode="w") as file:
+            for row in parse_dict_to_list(content):
+                file.write(delimiter.join([str(x) if x is not None else "" for x in row]))
+                file.write("\n")
+
+
+def parse_dict_to_list(content):
+    data = list()
+    data.append(list(content[0]))
+    for row in content:
+        data.append(list(row.values()))
+    return data
