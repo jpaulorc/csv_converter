@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
         " The suffix will have a number starting from 0. eg: file_0.json."
     ),
 )
-def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefix: str = None):
+def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefix: str = ""):
     """Convert single file or list of files
 
     - If the file was a CSV then it will be converted to JSON.
@@ -183,12 +183,25 @@ def is_int(value: str) -> bool:
 
 
 def write_comma(file, append_comma: bool):
+    """Writes comma when needed for JSON file.
+
+    Args:
+        file (io.TextIOWrapper): A file to write.
+        append_comma (bool): Defines whether the comma will be written.
+    """
     if append_comma:
         file.write(",")
     file.write("\n")
 
 
-def write_json_line(row, file, append_comma: bool = True):
+def write_json_line(row: tuple[str, str], file, append_comma: bool = True):
+    """Writes a string line into a JSON file.
+
+    Args:
+        row (tuple): A string line with two values to be written.
+        file (io.TextIOWrapper): A file to write.
+        append_comma (bool): Defines whether the comma will be written.
+    """
     key, value = row
     if not value:
         file.write(f'\t\t"{key}": null')
@@ -201,7 +214,14 @@ def write_json_line(row, file, append_comma: bool = True):
     write_comma(file, append_comma)
 
 
-def write_dict(data: dict, file, append_comma: bool = True):
+def write_dict(data: dict[str, str], file, append_comma: bool = True):
+    """Writes a dictionary into a JSON file.
+
+    Args:
+        data (dict): A dictionary of strings to be written into a file.
+        file (io.TextIOWrapper): A file to write.
+        append_comma (bool): Defines whether the comma will be written.
+    """
     file.write("\t{\n")
     items = tuple(data.items())
     for row in items[:-1]:
@@ -211,7 +231,14 @@ def write_dict(data: dict, file, append_comma: bool = True):
     write_comma(file, append_comma)
 
 
-def write_json(data, output_path, prefix):  # (data: list[dict[str, str]], output_path: Path):
+def write_json(data: list[list[dict[str, str]]], output_path: Path, prefix: str):
+    """Convert a CSV into a JSON file.
+
+    Args:
+        data (list[list[dict[str, str]]]): A CSV File.
+        output_path (Path): A path file where the JSON file will be written.
+        prefix (str): Prefix used to prepend to the name of the converted file saved on disk.
+    """
     for key, content in enumerate(data):
         file_name = output_path.joinpath(f"{prefix}_{key}.json")
         logger.info("Saving file %s in folder %s", file_name, output_path)
@@ -223,7 +250,15 @@ def write_json(data, output_path, prefix):  # (data: list[dict[str, str]], outpu
             file.write("]\n")
 
 
-def write_csv(data, delimiter, output_path, prefix):
+def write_csv(data: list[list[dict[str, str]]], delimiter: str, output_path: Path, prefix: str):
+    """Convert a JSON into a CSV file.
+
+    Args:
+        data (list[list[dict[str, str]]]): A JSON file.
+        delimiter (str): Used to split the file.
+        output_path (Path): A path file where the CSV file will be written.
+        prefix (str): Prefix used to prepend to the name of the converted file saved on disk.
+    """
     for key, content in enumerate(data):
         file_name = output_path.joinpath(f"{prefix}_{key}.csv")
         logger.info("Saving file %s in folder %s", file_name, output_path)
@@ -234,7 +269,16 @@ def write_csv(data, delimiter, output_path, prefix):
                 file.write("\n")
 
 
-def parse_dict_to_list(content):
+def parse_dict_to_list(content: list[dict[str, str]]) -> list[list[str]]:
+    """Converts a dictionary list into a list of lists where the first list is the header
+    and others were the values.
+
+    Args:
+        content (list[dict[str, str]]): The dictionaries to be converted into a list.
+
+    Returns:
+        list[list[str]]: A list of strings.
+    """
     data = list()
     data.append(list(content[0]))
     for row in content:
