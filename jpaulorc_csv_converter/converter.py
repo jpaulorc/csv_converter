@@ -39,8 +39,10 @@ logger = logging.getLogger(__name__)
     ),
 )
 def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefix: str = None):
-    """Convert single file or list of files\n
-    - If the file was a CSV then it will be converted to JSON.\n
+    """Convert single file or list of files
+
+    - If the file was a CSV then it will be converted to JSON.
+
     - If the file was a JSON then it will be converted to CSV."""
     input_path = Path(input)
     output_path = Path(output)
@@ -104,13 +106,13 @@ def check_extension(file: Path) -> str:
 
 
 def parse_list_to_dict(data: list[list[str]]) -> list[dict[str, str]]:
-    """Convert a list of lists to a list of dicts.
+    """Converts a list of lists into a dictionary list.
 
     Args:
         data (list[list[str]]): A data file containing a list of lists.
 
     Returns:
-        list[dict[str, str]]: A data file containing a list of dicts.
+        list[dict[str, str]]: A data file containing a dictionary list.
     """
     column = data[0]
     lines = data[1:]
@@ -119,12 +121,29 @@ def parse_list_to_dict(data: list[list[str]]) -> list[dict[str, str]]:
 
 
 def read_csv(input_path: Path, delimiter: str = ",") -> list[dict[str, str]]:
+    """Reads a CSV file and converts it into a dictionary list.
+
+    Args:
+        input_path (Path): A path file.
+        delimiter (str): Separator for columns.
+
+    Returns:
+        list[dict[str, str]]: A data file containing a dictionary list.
+    """
     with input_path.open(mode="r") as file:
         data = file.readlines()
     return parse_list_to_dict([line.strip().split(delimiter) for line in data])
 
 
 def read_json(input_path: Path) -> list[dict[str, str]]:
+    """Reads a JSON file and converts it into a dictionary list.
+
+    Args:
+        input_path (Path): A path file.
+
+    Returns:
+        list[dict[str, str]]: A data file containing a dictionary list.
+    """
     return eval(open(input_path, "r").read().replace("null", "None"))
 
 
