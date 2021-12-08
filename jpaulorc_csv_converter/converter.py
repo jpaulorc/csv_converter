@@ -55,11 +55,45 @@ def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefi
 
     data = read_file(source=input_path, delimiter=delimiter)
 
-    extension = check_extension(input_path)
+    """extension = check_extension(input_path)
     if extension == ".json":
         write_csv(data=data, output_path=output_path, prefix=prefix)
     elif extension == ".csv":
-        write_json(data=data, output_path=output_path, prefix=prefix)
+        write_json(data=data, output_path=output_path, prefix=prefix)"""
+
+
+def write_file(data, input_path, output_path, prefix):
+    pass
+
+
+def read_file(source: Path, delimiter: str):  # -> list:
+    """Load csv files from disk.
+
+    Args:
+        source (Path): Path of a single csv file or directory containing csvs to be parsed.
+        delimiter (str): Separator for columns in csv.
+
+    Returns:
+        List: List of Lists.
+    """
+    if source.is_file():
+        extension = check_extension(source)
+        if extension == ".json":
+            logger.info("Reading Single JSON File %s", source)
+            return [read_json(input_path=source)]
+        elif extension == ".csv":
+            logger.info("Reading Single CSV File %s", source)
+            return [read_csv(input_path=source, delimiter=delimiter)]
+
+    data = list()
+    logger.info("Reading all files for given path %s", source)
+    for name in source.iterdir():
+        if check_extension(name) == ".json":
+            logger.info("Reading all JSON files for given path %s", source)
+        elif check_extension(name) == ".csv":
+            data.append(read_csv(input_path=name, delimiter=delimiter))
+
+    return data
 
 
 def check_extension(file):
@@ -85,64 +119,6 @@ def read_csv(input_path: Path, delimiter: str = ",") -> list[dict[str, str]]:
 
 def read_json(input_path: Path) -> list[dict[str, str]]:
     return eval(open(input_path, "r").read().replace("null", "None"))
-
-
-def read_file(source: Path, delimiter: str):  # -> list:
-    """Load csv files from disk.
-
-    Args:
-        source (Path): Path of a single csv file or directory containing csvs to be parsed.
-        delimiter (str): Separator for columns in csv.
-
-    Returns:
-        List: List of Lists.
-    """
-    if source.is_file():
-        extension = check_extension(source)
-        if extension == ".json":
-            logger.info("Reading Single JSON File %s", source)
-            return [read_json(input_path=source)]
-        elif extension == ".csv":
-            logger.info("Reading Single CSV File %s", source)
-            return [read_csv(input_path=source, delimiter=delimiter)]
-
-    data = list()
-    logger.info("Reading all files for given path %s", source)
-    logger.info("Teste")
-    for name in source.iterdir():
-        extension = check_extension(name)
-
-        if extension == ".json":
-            logger.info("Reading all JSON files for given path %s", source)
-        elif extension == ".csv":
-            data.append(read_csv(input_path=name, delimiter=delimiter))
-
-    return data
-
-
-def read_csv_file(source: Path, delimiter: str) -> list:
-    """Load csv files from disk.
-
-    Args:
-        source (Path): Path of a single csv file or directory containing csvs to be parsed.
-        delimiter (str): Separator for columns in csv.
-
-    Returns:
-        List: List of Lists.
-    """
-
-    if source.is_file():
-        logger.info("Reading Single File %s", source)
-        return [read_csv(input_path=source, delimiter=delimiter)]
-
-    logger.info("Teste 1")
-
-    logger.info("Reading all files for given path %s", source)
-    data = list()
-    for name in source.iterdir():
-        data.append(read_csv(input_path=name, delimiter=delimiter))
-
-    return data
 
 
 def isfloat(value: str) -> bool:
