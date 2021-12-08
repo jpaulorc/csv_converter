@@ -112,11 +112,9 @@ def parse_list_to_dict(data: list[list[str]]) -> list[dict[str, str]]:
     Returns:
         list[dict[str, str]]: A data file containing a list of dicts.
     """
-    print(data)
     column = data[0]
     lines = data[1:]
     """Checks if all lines have values. Some files have special character in last lines."""
-    print([dict(zip(column, line)) for line in lines if len(column) == len(line)])
     return [dict(zip(column, line)) for line in lines if len(column) == len(line)]
 
 
