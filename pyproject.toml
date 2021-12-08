@@ -1,9 +1,10 @@
 [tool.poetry]
 authors = ["Joao Corte <jpaulorc@gmail.com>"]
 description = "Convert csv to json and json to csv. Publishin only for leaning purposes."
+exclude = ["jpaulorc_csv_converter/.git"]
 name = "jpaulorc_csv_converter"
 readme = "README.md"
-version = "0.1.0"
+version = "0.1.1"
 
 [tool.poetry.dependencies]
 click = "^8.0.3"

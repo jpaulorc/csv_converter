@@ -39,7 +39,9 @@ logger = logging.getLogger(__name__)
     ),
 )
 def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefix: str = None):
-    """Convert single file or list of csv to json"""
+    """Convert single file or list of files\n
+    - If the file was a CSV then it will be converted to JSON.\n
+    - If the file was a JSON then it will be converted to CSV."""
     input_path = Path(input)
     output_path = Path(output)
 
@@ -50,7 +52,7 @@ def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefi
         if not (p.is_file() or p.is_dir()):
             raise TypeError("Not a valid path or file name.")
 
-    if delimiter not in [",", ";", ":"]:
+    if delimiter not in [",", ":"]:
         raise TypeError("Not a valid symbol to delimiter.")
 
     if input_path.is_file():
@@ -85,7 +87,15 @@ def converter(input: str = "./", output: str = "./", delimiter: str = ",", prefi
             write_csv(data=json_data, delimiter=delimiter, output_path=output_path, prefix=prefix)
 
 
-def check_extension(file):
+def check_extension(file: Path) -> str:
+    """Checks if is a valid extension.
+
+    Args:
+        file (Path): A path file.
+
+    Returns:
+        str: A extension file.
+    """
     filename, extension = path.splitext(file)
     if extension == ".json" or extension == ".csv":
         return extension
